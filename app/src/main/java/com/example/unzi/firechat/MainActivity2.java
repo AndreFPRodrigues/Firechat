@@ -2,12 +2,14 @@ package com.example.unzi.firechat;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -23,7 +25,9 @@ public class MainActivity2 extends AppCompatActivity {
 
     private EditText edt_message;
     private String myEmail;
+
     private ListView lv;
+
     private List<String> chat;
     private ArrayAdapter<String> adapter;
 
@@ -41,7 +45,6 @@ public class MainActivity2 extends AppCompatActivity {
         edt_message = (EditText) findViewById(R.id.edt_chat_message);
 
         chat = new ArrayList<String>();
-        chat.add("teste");
 
         lv = findViewById(R.id.chat_list);
 
@@ -57,18 +60,30 @@ public class MainActivity2 extends AppCompatActivity {
 
 
         // Read from the database
-        myRef.addValueEventListener(new ValueEventListener() {
+        myRef.addChildEventListener(new ChildEventListener() {
+
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                int aux=0;
-                for (DataSnapshot d : dataSnapshot.getChildren()) {
-                    aux++;
-                    if(aux>chat.size()) {
-                        FireMessage value = d.getValue(FireMessage.class);
-                        Log.d(TAG, "Value is: " + value.getMessageText());
-                        updateUI(value);
-                    }
-                }
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                    FireMessage value =dataSnapshot.getValue(FireMessage.class);
+                    Log.d(TAG, "Value is: " + value.getMessageText());
+                    updateUI(value);
+
+
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
             }
 
             @Override
